@@ -8,20 +8,38 @@
  * @format
  */
 
-import React, {Fragment} from 'react';
+import React from 'react';
 
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator, NavigationStackProp} from 'react-navigation-stack';
 import {HomeScreen, Props as HomeScreenProps} from './src/home/home_screen';
+import { ActiveWorkoutScreen } from './src/active_workout/screen';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 
 const mainNavigator = createStackNavigator({
   Home: {
-    screen: HomeScreen
+    screen: HomeScreen,
   },
+  ActiveWorkout: {
+    screen: ActiveWorkoutScreen
+  }
 })
+
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: 'tomato',
+    accent: 'yellow',
+  },
+};
 
 const AppContainer = createAppContainer(mainNavigator);
 
-const App = () => <AppContainer/>
+const App = () => (
+  <PaperProvider theme={theme}>
+    <AppContainer/>
+  </PaperProvider>
+)
 
 export default App;
