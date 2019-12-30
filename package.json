@@ -6,11 +6,12 @@
     "start": "react-native start",
     "test": "jest",
     "a": "npx react-native run-android",
-    "arr": "adb shell input text \"RR\""
+    "arr": "adb shell input text \"RR\"",
+    "ad": "adb shell input keyevent 82"
   },
   "dependencies": {
     "react": "16.8.6",
-    "react-native": "0.60.5",
+    "react-native": "^0.60.5",
     "react-native-gesture-handler": "^1.5.2",
     "react-native-paper": "^3.4.0",
     "react-native-vector-icons": "^6.6.0",
