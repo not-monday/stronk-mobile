@@ -29,7 +29,7 @@ export function ActiveWorkoutScreen(props: Props) {
 }
 
 function handleRenderCard (workout : Workout) {
-  return <WorkoutExerciseCard/>
+  return <WorkoutExerciseCard workoutExercise={}/>
 }
 
 /**

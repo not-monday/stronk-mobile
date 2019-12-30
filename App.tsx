@@ -12,9 +12,9 @@ import React from 'react';
 
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator, NavigationStackProp} from 'react-navigation-stack';
-import {HomeScreen as HomeScreenProps, HomeScreen} from './src/home/home_screen';
+import {HomeScreen as HomeScreenProps, HomeScreen} from './src/presentation/home/home_screen';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
-import { ActiveWorkoutScreen } from './src/active_workout/screen';
+import { ActiveWorkoutScreen } from './src/presentation/active_workout/screen';
 
 const mainNavigator = createStackNavigator({
   Home: {

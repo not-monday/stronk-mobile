@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React, { useState } from "react";
 import { BottomNavigation, Appbar } from "react-native-paper";
-import { OverviewScreen } from "../active_workout/overview/screen";
+import { OverviewScreen } from "../overview/screen";
 import { NavigationScreenProp, NavigationState, NavigationParams } from "react-navigation";
 
 type Props = {
