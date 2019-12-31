@@ -3,6 +3,7 @@ import { View, Text } from "react-native";
 import React from "react";
 import { Button, Card } from "react-native-paper";
 import { FlatList } from "react-native-gesture-handler";
+import { StronkContext } from "../../../App";
 
 
 export type Props = {

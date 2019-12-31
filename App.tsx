@@ -11,10 +11,11 @@
 import React from 'react';
 
 import {createAppContainer} from 'react-navigation';
-import {createStackNavigator, NavigationStackProp} from 'react-navigation-stack';
+import {createStackNavigator} from 'react-navigation-stack';
 import {HomeScreen as HomeScreenProps, HomeScreen} from './src/presentation/home/home_screen';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { ActiveWorkoutScreen } from './src/presentation/active_workout/screen';
+import { WorkoutRepository } from './src/api/workout_repo';
 
 const mainNavigator = createStackNavigator({
   Home: {
@@ -36,9 +37,23 @@ const theme = {
 
 const AppContainer = createAppContainer(mainNavigator);
 
+// region stronk appcontext
+export type StronkContextProps = {
+  workoutRepo: WorkoutRepository
+}
+
+export const stronkAppContext : StronkContextProps = {
+  workoutRepo: new WorkoutRepository()
+}
+
+export const StronkContext = React.createContext<StronkContextProps>(stronkAppContext)
+// endregion stronk appcontext
+
 const App = () => (
   <PaperProvider theme={theme}>
-    <AppContainer/>
+    <StronkContext.Provider value={stronkAppContext}>
+      <AppContainer/>
+    </StronkContext.Provider>
   </PaperProvider>
 )
 
