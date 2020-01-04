@@ -8,20 +8,25 @@ class Exercise {
 class Program {
     constructor(
         readonly name: String,
-        readonly workouts: Workout
+        readonly workouts: Workout[]
     ){}
 }
 
+/**
+ * represents an entire workout 
+ */
 class Workout {
     constructor(
         readonly id: String,
         readonly name: String,
-        readonly description: String,
-        readonly workoutExercises: [WorkoutExercise],
+        readonly description: String | null,
+        readonly workoutExercises: WorkoutExercise[],
     ) {}
-   
 }
 
+/**
+ * represents each exercise in a workout
+ */
 class WorkoutExercise {
     constructor(
         readonly id: String, // id uniquely identifies the exercise with context to this workout
@@ -32,6 +37,9 @@ class WorkoutExercise {
     ) {}
 }
 
+/**
+ * represents each "set" for a specific exercise with a weight and rep value
+ */
 class ExerciseSet {
     constructor (
         readonly weight : number,

@@ -1,9 +1,18 @@
-export class WorkoutRepository {
-    retrieveProgram() {
+interface WorkoutRepository {
+    retrieveProgram() : Program
+    retrieveWorkout() : Workout
+}
 
+class WorkoutRepositoryImpl implements WorkoutRepository {
+    retrieveProgram() : Program {
+        return this.mockProgram()
     }  
 
-    retrieveWorkoutExercise() : WorkoutExercise {
+    retrieveWorkout() : Workout {
+        return this.mockWorkout()
+    }
+
+    mockWorkoutExercise() : WorkoutExercise {
 
         const mockExerciseSets = [
             this._mockExerciseSetparams(),
@@ -22,7 +31,6 @@ export class WorkoutRepository {
         return (mockWorkoutExercise)
     }
 
-
     _mockExerciseSetparams() : ExerciseSet {
         return {
             weight : 20,
@@ -30,4 +38,36 @@ export class WorkoutRepository {
         }
     }
 
+    mockWorkout() : Workout {
+        const mockWorkoutExercises = [
+            this.mockWorkoutExercise(),
+            this.mockWorkoutExercise(),
+            this.mockWorkoutExercise(),
+        ]
+
+        const mockWorkout = {
+            id : "mock_id",
+            name: "mock workout",
+            description: "mock description",
+            workoutExercises: mockWorkoutExercises
+        }
+
+        return mockWorkout
+    }
+
+    mockProgram() : Program {
+        const mockWorkouts = [
+            this.mockWorkout(),
+            this.mockWorkout(),
+            this.mockWorkout(),
+        ]
+
+        return {
+            name: "mock program name",
+            workouts: mockWorkouts
+        }
+    }
+
 }
+
+export { WorkoutRepository, WorkoutRepositoryImpl } 

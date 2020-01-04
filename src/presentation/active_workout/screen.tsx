@@ -1,6 +1,6 @@
 import { NavigationStackProp } from "react-navigation-stack";
-import { View, Text } from "react-native";
-import React from "react";
+import { View, Text, ListRenderItemInfo } from "react-native";
+import React, { useContext } from "react";
 import { Button, Card } from "react-native-paper";
 import { FlatList } from "react-native-gesture-handler";
 import { StronkContext } from "../../../App";
@@ -12,25 +12,30 @@ export type Props = {
 
 export function ActiveWorkoutScreen(props: Props) {
   const { navigate } = props.navigation;
-  
+  const stronkContext = useContext(StronkContext);
+
   const cardListStyle = {
     backgroundColor : '#fdf6e3'
   }
+
+  const workout = stronkContext.workoutRepo.retrieveWorkout()
   
   return (
     <View style={cardListStyle}>
       <Text> Active Workout page </Text>
       <Header/>
       <FlatList
-        data={}
-        renderItem={}
+        data={workout.workoutExercises}
+        renderItem={handleRenderCard}
+        keyExtractor={(item, index) => String(index)}
       />
     </View>
   );
 }
 
-function handleRenderCard (workout : Workout) {
-  return <WorkoutExerciseCard workoutExercise={}/>
+function handleRenderCard (info : ListRenderItemInfo<WorkoutExercise>) {
+  const {item} = info
+  return <WorkoutExerciseCard exercise={item}/>
 }
 
 /**

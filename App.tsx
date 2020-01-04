@@ -15,7 +15,7 @@ import {createStackNavigator} from 'react-navigation-stack';
 import {HomeScreen as HomeScreenProps, HomeScreen} from './src/presentation/home/home_screen';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { ActiveWorkoutScreen } from './src/presentation/active_workout/screen';
-import { WorkoutRepository } from './src/api/workout_repo';
+import { WorkoutRepository, WorkoutRepositoryImpl } from './src/api/workout_repo';
 
 const mainNavigator = createStackNavigator({
   Home: {
@@ -43,7 +43,7 @@ export type StronkContextProps = {
 }
 
 export const stronkAppContext : StronkContextProps = {
-  workoutRepo: new WorkoutRepository()
+  workoutRepo: new WorkoutRepositoryImpl()
 }
 
 export const StronkContext = React.createContext<StronkContextProps>(stronkAppContext)
