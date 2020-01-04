@@ -14,7 +14,7 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {HomeScreen as HomeScreenProps, HomeScreen} from './src/presentation/home/home_screen';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
-import { ActiveWorkoutScreen } from './src/presentation/active_workout/screen';
+import { ActiveWorkoutScreen } from './src/presentation/active_workout/active_workout_screen';
 import { WorkoutRepository, WorkoutRepositoryImpl } from './src/api/workout_repo';
 
 const mainNavigator = createStackNavigator({
