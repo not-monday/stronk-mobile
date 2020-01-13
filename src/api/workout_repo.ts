@@ -21,7 +21,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
         ]
 
         const mockWorkoutExercise = {
-            id : "1",
+            id : Math.random().toString(),
             name: "workout name",
             exerciseId: "1",
             exerciseSets: mockExerciseSets,
@@ -46,7 +46,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
         ]
 
         const mockWorkout = {
-            id : "mock_id",
+            id : Math.random().toString(),
             name: "mock workout",
             description: "mock description",
             workoutExercises: mockWorkoutExercises

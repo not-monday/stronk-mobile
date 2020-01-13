@@ -7,12 +7,13 @@
     "test": "jest",
     "a": "npx react-native run-android",
     "arr": "adb shell input text \"RR\"",
-    "ad": "adb shell input keyevent 82"
+    "ad": "adb shell input keyevent 82",
+    "alog": "npx react-native log-android"
   },
   "dependencies": {
     "@react-native-community/viewpager": "^3.3.0",
     "react": "16.8.6",
-    "react-native": "^0.60.5",
+    "react-native": "^0.61.5",
     "react-native-gesture-handler": "^1.5.2",
     "react-native-paper": "^3.4.0",
     "react-native-swipe-gestures": "^1.0.4",
