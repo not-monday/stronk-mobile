@@ -27,19 +27,18 @@ function ActiveWorkoutScreen (props : Props) {
         const activeWorkout = stronkContext.workoutRepo.retrieveWorkout()
 
         
-        // add each exercise (without any sets) to the completed exercises
-        const completedExercises = activeWorkout.workoutExercises.map((workoutExercise) => {
-           return {
-               ...workoutExercise,
-               exerciseSets: []
-            }
+        // create 2d lists to represent remaining and completed Exercises
+        const completedExercises = new Map();
+        const remainingExercises = new Map();
+        activeWorkout.workoutExercises.forEach((exercise) => {
+            remainingExercises.set(exercise.id, exercise.exerciseSets)
         })
 
         setState({
             ...state,
             activeWorkout : activeWorkout,
             completedExercises: completedExercises,
-            remainingExercises: [...activeWorkout.workoutExercises]
+            remainingExercises: remainingExercises
         })
     }
 
