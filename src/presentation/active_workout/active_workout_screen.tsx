@@ -10,13 +10,17 @@ type Props = {
 
 interface State {
     activeWorkout? : Workout
-    completedExercises : WorkoutExercise[],
-    remainingExercises : WorkoutExercise[]
+    completedExercises : ActionableWorkoutExercise[],
+    remainingExercises : ActionableWorkoutExercise[],
+    currentExerciseIndex: number,
+    completed: boolean
 }
 
 const initialState : State = {
-    completedExercises : [],
-    remainingExercises : []
+    completedExercises: [],
+    remainingExercises: [],
+    currentExerciseIndex: 0,
+    completed : false
 }
 
 function ActiveWorkoutScreen (props : Props) {
@@ -26,13 +30,13 @@ function ActiveWorkoutScreen (props : Props) {
         const stronkContext = useContext(StronkContext);
         const activeWorkout = stronkContext.workoutRepo.retrieveWorkout()
 
-        
-        // create 2d lists to represent remaining and completed Exercises
-        const completedExercises = new Map();
-        const remainingExercises = new Map();
-        activeWorkout.workoutExercises.forEach((exercise) => {
-            remainingExercises.set(exercise.id, exercise.exerciseSets)
-        })
+        // initialize completed and remaining exercise maps
+        const completedExercises = activeWorkout.workoutExercises.map(
+            (exercise)=> new ActionableWorkoutExercise(exercise, [])
+        );
+        const remainingExercises = activeWorkout.workoutExercises.map((exercise)=> 
+            new ActionableWorkoutExercise(exercise, [...exercise.exerciseSets])
+        );
 
         setState({
             ...state,
@@ -52,41 +56,52 @@ function ActiveWorkoutScreen (props : Props) {
 }
 
 function completeExercise(state : State, setState : Dispatch<SetStateAction<State>>) {
-    // current exercise set will always be the first set of the first exercise in the current workout
-    const currentExercise = state.remainingExercises[0]
-    const completedSet = currentExercise.exerciseSets.shift()
+    // remove the set from the exercise in the list of remaining sets
+    const currentRemainingExercise = state.remainingExercises[state.currentExerciseIndex]
+    const completedSet = currentRemainingExercise.exercise.exerciseSets.shift()!
 
-    // find the exercise in the completed exercise list and add the set to it
-    const accociatedExercise = state.completedExercises.filter((workoutExercise)=> {
-        workoutExercise.exerciseId == currentExercise.id
-    })[0]
-    
-    const newCompletedExercise = {
-        ...accociatedExercise,
-        exerciseSets : [...accociatedExercise.exerciseSets, completedSet!]
-    }
+    // add the set to the exercise in the list of completed sets
+    const currentCompletedExercise = state.completedExercises[state.currentExerciseIndex]
+    currentCompletedExercise.exerciseSets.unshift(completedSet)
 
     setState({
         ...state,
-        remainingExercises : newRemainingExercises
+        remainingExercises: [...state.remainingExercises],
+        completedExercises: [...state.completedExercises],
     })
 
-    //remove the current exercise set if it is empty
-    if (currentExercise.exerciseSets.length == 0) {
-        // remove the (first) exercise from remaining exercises if the completed set was the last set in the exercise
-        const newRemainingExercises = [...state.completedExercises]
-        newRemainingExercises.shift()
-
-        setState({
-            ...state,
-            remainingExercises : newRemainingExercises
-        }) 
+    // update the index of the current exercise if it has no more sets
+    if (currentRemainingExercise.exerciseSets.length == 0) {
+        if (state.currentExerciseIndex < state.remainingExercises.length) {
+            setState({
+                ...state,
+                currentExerciseIndex : state.currentExerciseIndex + 1
+            })
+        } else {
+            // complete exercise
+            setState({
+                ...state,
+                completed : true
+            })
+        }
     }
-
 }
 
-function failExercise() {
-
+function failExercise(state : State, setState : Dispatch<SetStateAction<State>>) {
+    completeExercise 
 }
 
-export { ActiveWorkoutScreen}
+class ActionableWorkoutExercise {
+    exercise : WorkoutExercise
+    exerciseSets: ExerciseSet[]
+
+    constructor(
+        exercise : WorkoutExercise,
+        exerciseSets: ExerciseSet[]
+    ) {
+        this.exercise = exercise
+        this.exerciseSets = exerciseSets
+    }
+}
+
+export { ActiveWorkoutScreen, ActionableWorkoutExercise }

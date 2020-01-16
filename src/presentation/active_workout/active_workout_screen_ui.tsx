@@ -5,11 +5,12 @@ import { FlatList } from "react-native-gesture-handler";
 import { WorkoutExerciseCard } from "./exercise_card";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import ViewPager from '@react-native-community/viewpager';
+import { ActionableWorkoutExercise } from "./active_workout_screen";
 
 interface Props {
   activeWorkout? : Workout,
-  completedExercises : WorkoutExercise[],
-  remainingExercises : WorkoutExercise[],
+  completedExercises : ActionableWorkoutExercise[],
+  remainingExercises : ActionableWorkoutExercise[],
   completeCurrentExercise(): void,
   failCurrentExercise(): void
 }
