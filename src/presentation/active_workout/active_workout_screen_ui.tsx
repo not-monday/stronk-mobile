@@ -5,20 +5,18 @@ import { FlatList } from "react-native-gesture-handler";
 import { WorkoutExerciseCard } from "./exercise_card";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import ViewPager from '@react-native-community/viewpager';
-import { ActionableWorkoutExercise } from "./active_workout_screen";
+import { SetRecord } from "./active_workout_screen";
 
 interface Props {
   activeWorkout? : Workout,
-  completedExercises : ActionableWorkoutExercise[],
-  remainingExercises : ActionableWorkoutExercise[],
+  workoutExercises: WorkoutExercise[],
+  completedExercises : Map<String, SetRecord[]>,
+  remainingExercises : Map<String, SetRecord[]>,
   completeCurrentExercise(): void,
   failCurrentExercise(): void
 }
 
 export function ActiveWorkoutScreenUI(props : Props) {
-
-  console.debug(props.remainingExercises);
-  console.debug(props.completedExercises);
 
   const cardScreenStyle = {
     backgroundColor : '#fdf6e3',
@@ -38,10 +36,10 @@ export function ActiveWorkoutScreenUI(props : Props) {
         />
         <ViewPager style={cardScreenStyle.viewpagerStyle} initialPage={0}>
           <View key="0">
-            <WorkoutExercises exercises={props.remainingExercises}/>
+            <WorkoutExercises exercises={props.workoutExercises} sets={props.remainingExercises}/>
           </View>
           <View key="1">
-            <WorkoutExercises exercises={props.completedExercises}/>
+            <WorkoutExercises exercises={props.workoutExercises} sets={props.completedExercises}/>
           </View>
         </ViewPager>
       </View>
@@ -53,10 +51,6 @@ export function ActiveWorkoutScreenUI(props : Props) {
       </View>
     )
   }
-}
-
-function handleRenderCard (info : ListRenderItemInfo<WorkoutExercise>) {
-  return <WorkoutExerciseCard exercise={info.item}/>
 }
 
 type HeaderProps = {
@@ -95,12 +89,15 @@ function Header(props : HeaderProps) {
 
 type WorkoutExercisesProps = {
   exercises : WorkoutExercise[]
+  sets : Map<String, SetRecord[]>
 }
 
-function WorkoutExercises({exercises} : WorkoutExercisesProps) { 
+function WorkoutExercises({exercises, sets} : WorkoutExercisesProps) {
   return <FlatList
     data={exercises}
-    renderItem={handleRenderCard}
+    renderItem={({item}) => 
+      <WorkoutExerciseCard exercise={item} setRecords={sets.get(item.exerciseId)!}/>
+    }
     keyExtractor={(item, index) => String(index)}
   />
 }

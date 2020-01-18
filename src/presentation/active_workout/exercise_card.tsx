@@ -2,34 +2,32 @@ import { Card, Button } from "react-native-paper"
 import React from "react"
 import { Text } from 'react-native';
 import { View, FlatList, ListRenderItemInfo } from "react-native"
+import { SetRecord } from "./active_workout_screen";
 
 type ExerciseCardProps = {
-    exercise : WorkoutExercise
+    exercise : WorkoutExercise,
+    setRecords: SetRecord[]
 }
   
-function WorkoutExerciseCard(props: ExerciseCardProps) {
+function WorkoutExerciseCard({exercise, setRecords}: ExerciseCardProps) {
     const cardStyle = {
         backgroundColor : '#fdf6e3',
         margin: 10,
     }
 
     const textStyle = {
-        fontWeight: 'bold',
-        marginStart: 10,
+        // fontWeight: 'bold',
     }
 
-    const {name, exerciseSets} = props.exercise 
 
     return (
         <View style={cardStyle}>
-            <Text style={textStyle}>{name}</Text>
+            <Text style={textStyle}>{exercise.name}</Text>
             <FlatList
                 horizontal={true}
-                data={exerciseSets}
+                data={exercise.exerciseSets}
                 renderItem={
-                    ({item} : ListRenderItemInfo<ExerciseSet>) => {
-                    return ExerciseSet(item)
-                    }
+                    ({item}) => ExerciseSet(item)
                 }
                 keyExtractor={(item, index) => String(index)}
             />
