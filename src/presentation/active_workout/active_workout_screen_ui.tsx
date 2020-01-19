@@ -5,13 +5,12 @@ import { FlatList } from "react-native-gesture-handler";
 import { WorkoutExerciseCard } from "./exercise_card";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import ViewPager from '@react-native-community/viewpager';
-import { SetRecord } from "./active_workout_screen";
+import { SetRecord, SetRecordstatus } from "./active_workout_screen";
 
 interface Props {
   activeWorkout? : Workout,
   workoutExercises: WorkoutExercise[],
-  completedExercises : Map<String, SetRecord[]>,
-  remainingExercises : Map<String, SetRecord[]>,
+  exerciseRecords : Map<String, SetRecord[]>,
   completeCurrentExercise(): void,
   failCurrentExercise(): void
 }
@@ -36,10 +35,10 @@ export function ActiveWorkoutScreenUI(props : Props) {
         />
         <ViewPager style={cardScreenStyle.viewpagerStyle} initialPage={0}>
           <View key="0">
-            <WorkoutExercises exercises={props.workoutExercises} sets={props.remainingExercises}/>
+            <WorkoutExercises exercises={props.workoutExercises} sets={props.exerciseRecords}/>
           </View>
           <View key="1">
-            <WorkoutExercises exercises={props.workoutExercises} sets={props.completedExercises}/>
+            <WorkoutExercises exercises={props.workoutExercises} sets={props.exerciseRecords}/>
           </View>
         </ViewPager>
       </View>
@@ -78,8 +77,8 @@ function Header(props : HeaderProps) {
         <Card style={cardStyle}>
           <Card.Title title="Card Title" subtitle="Card Subtitle" />
           <Card.Actions>
-            <Button>Cancel</Button>
-            <Button>Ok</Button>
+            <Button onPress={props.handleFailure}>FAIL</Button>
+            <Button onPress={props.handleSuccess}>SUCCESS</Button>
           </Card.Actions>
         </Card>
       </GestureRecognizer>

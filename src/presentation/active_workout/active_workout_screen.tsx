@@ -9,19 +9,17 @@ type Props = {
 }
 
 interface State {
-    activeWorkout? : Workout
-    workoutExercises: WorkoutExercise[]
-    completedExercises : Map<String, SetRecord[]>,
-    remainingExercises : Map<String, SetRecord[]>,
+    workoutRef? : Workout
+    exerciseRecords : Map<String, SetRecord[]>,
     currentExerciseIndex: number,
+    currentSetIndex: number,
     completed: boolean
 }
 
 const initialState : State = {
-    workoutExercises: [],
-    completedExercises: new Map(),
-    remainingExercises: new Map(),
+    exerciseRecords: new Map(),
     currentExerciseIndex: 0,
+    currentSetIndex: 0,
     completed : false
 }
 
@@ -29,73 +27,117 @@ function ActiveWorkoutScreen (props : Props) {
     const [state, setState] = useState(initialState)
 
     const completeExercise = () => {
-        const exercise = state.workoutExercises[state.currentExerciseIndex]
-        const remainingSets = state.remainingExercises.get(exercise.exerciseId)!
-        const completedSets = state.completedExercises.get(exercise.exerciseId)!
+        if (!state.workoutRef) return
 
-        // remove the set from the exercise in the list of remaining sets and add it to the list of completed ones
-        const completedSet = remainingSets.shift()!
+        const exercise = state.workoutRef!.workoutExercises[state.currentExerciseIndex]
+        const setRecords = state.exerciseRecords.get(exercise.id)!
 
-        state.remainingExercises.set(exercise.exerciseId, [...remainingSets])
-        state.completedExercises.set(exercise.exerciseId, [completedSet, ...completedSets])
+        console.debug("exercise id " + exercise.exerciseId)
+        console.debug("exercises " +  JSON.stringify(state.workoutRef.workoutExercises))
+        console.debug("set record " +  JSON.stringify(setRecords))
+        console.debug(state)
+
+        // update set record with new status
+        const currSetRecord = setRecords[state.currentSetIndex]
+        const newSetRecord = {
+            ...currSetRecord,
+            status : Status.Passed
+        }
+        const newSetRecords = [...setRecords]
+        newSetRecords[state.currentExerciseIndex] = newSetRecord
+        state.exerciseRecords.set(exercise.exerciseId, newSetRecords)
 
         setState({
             ...state,
-            remainingExercises: {...state.remainingExercises},
-            completedExercises: {...state.completedExercises},
+            exerciseRecords: {...state.exerciseRecords},
         })
 
-        // // update the index of the current exercise if it has no more sets
-        // if (currentRemainingExercise.exerciseSets.length == 0) {
-        //     if (state.currentExerciseIndex < state.remainingExercises.length) {
-        //         setState({
-        //             ...state,
-        //             currentExerciseIndex : state.currentExerciseIndex + 1
-        //         })
-        //     } else {
-        //         // complete exercise
-        //         setState({
-        //             ...state,
-        //             completed : true
-        //         })
-        //     }
-        // }
-        // // console.debug("after " + JSON.stringify(state))
+        // update the index of the current exercise if it has no more sets
+        if (state.currentSetIndex == newSetRecords.length - 1) {
+            const newSetIndex = 0
+            const newExerciseIndex = state.currentExerciseIndex + 1
+            
+            if (state.currentExerciseIndex <= state.exerciseRecords.keys.length) {
+                setState({
+                    ...state,
+                    currentSetIndex: newSetIndex,
+                    currentExerciseIndex : newExerciseIndex
+                })
+            } else {
+                // complete exercise if all exercises have been completed
+                setState({
+                    ...state,
+                    completed : true
+                })
+            }
+        } else {
+            setState({
+                ...state,
+                currentSetIndex: state.currentSetIndex + 1
+            })
+        }
+        // console.debug("after " + JSON.stringify(state))
     }
 
     const failExercise = () => {
         // TODO
     }
 
-    if (!state.activeWorkout) {
+    // initialize the workoutExercise
+    if (!state.workoutRef) {
         const stronkContext = useContext(StronkContext);
         const activeWorkout = stronkContext.workoutRepo.retrieveWorkout()
 
         // initialize completed and remaining exercise lists
-        const remaining = new Map()
-        const completed = new Map()
-
-        const completedExercises = activeWorkout.workoutExercises.forEach(
+        const exerciseRecords = new Map()
+        activeWorkout.workoutExercises.forEach(
             (exercise)=> {
-                remaining.set(exercise.id, [])
-                completed.set(exercise.id, [])
+                // create set record for each exercise set
+                const setRecords = exercise.exerciseSets.map(()=> SetRecord(Status.Incomplete))
+                exerciseRecords.set(exercise.id, setRecords)
             }
         );
 
         setState({
             ...state,
-            workoutExercises: activeWorkout.workoutExercises,
-            activeWorkout : activeWorkout,
-            completedExercises: completed,
-            remainingExercises: remaining
+            workoutRef : activeWorkout,
+            exerciseRecords: exerciseRecords
         })
     }
 
+    // const remainingExercises : DisplaySet[][] = []
+    // const completedExercises : DisplaySet[][] = []
+
+    state.exerciseRecords.forEach((setRecords)=> {
+        if (!state.workoutRef) return
+
+        // const remainingSetRecords = state.workoutRef.workoutExercises
+        //     .map(exercise=> {
+        //         // get the set records associated with this exercise
+        //         const setRecords = state.exerciseRecords.get(exercise.id)
+        //     })
+        //     .filter(setRecord => setRecord.status == Status.Incomplete)
+        //     .map(setRecord => DisplaySet )
+
+        // const completedSetRecords = setRecords.filter(setRecord => {
+        //     setRecord.status != Status.Incomplete
+        // })
+
+        // if (remainingSetRecords.length > 0) {
+        //     remainingExercises.
+        // }
+
+        // if (completedSetRecords.length > 0) {
+            
+        // }
+
+    })
+
     return <ActiveWorkoutScreenUI 
-        activeWorkout={state.activeWorkout}
-        workoutExercises={state.workoutExercises}
-        completedExercises={state.completedExercises}
-        remainingExercises={state.remainingExercises}
+        activeWorkout={state.workoutRef}
+        workoutExercises={state.workoutRef.workoutExercises}
+        remainingsets={state.exerciseRecords}
+        completedSets={state.exerciseRecords}
         completeCurrentExercise={completeExercise}
         failCurrentExercise={failExercise}
     />
@@ -107,7 +149,7 @@ enum Status{
     Failed = 2
 }
 
-interface SetRecord {
+type SetRecord = ExerciseSet & {
     status : Status
 }
 
@@ -124,4 +166,4 @@ interface SetRecord {
 //     }
 // }
 
-export { ActiveWorkoutScreen, SetRecord }
+export { ActiveWorkoutScreen, SetRecord, Status as SetRecordstatus }
