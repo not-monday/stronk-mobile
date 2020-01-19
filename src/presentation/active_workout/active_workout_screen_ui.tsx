@@ -1,22 +1,21 @@
 import { View, Text, ListRenderItemInfo, PanResponderGestureState } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, Component } from "react";
 import { Button, Card } from "react-native-paper";
 import { FlatList } from "react-native-gesture-handler";
 import { WorkoutExerciseCard } from "./exercise_card";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import ViewPager from '@react-native-community/viewpager';
-import { SetRecord, SetRecordstatus } from "./active_workout_screen";
+import { SetRecord, SetRecordstatus, ExerciseRecord } from "./active_workout_screen";
 
 interface Props {
   activeWorkout? : Workout,
-  workoutExercises: WorkoutExercise[],
-  exerciseRecords : Map<String, SetRecord[]>,
+  exerciseRecords: ExerciseRecord[],
+  setRecords  :SetRecord[][],
   completeCurrentExercise(): void,
   failCurrentExercise(): void
 }
 
 export function ActiveWorkoutScreenUI(props : Props) {
-
   const cardScreenStyle = {
     backgroundColor : '#fdf6e3',
     flex: 1,
@@ -35,10 +34,10 @@ export function ActiveWorkoutScreenUI(props : Props) {
         />
         <ViewPager style={cardScreenStyle.viewpagerStyle} initialPage={0}>
           <View key="0">
-            <WorkoutExercises exercises={props.workoutExercises} sets={props.exerciseRecords}/>
+            <RemainingExercisesPage exercises={props.exerciseRecords} sets={props.setRecords }/>
           </View>
           <View key="1">
-            <WorkoutExercises exercises={props.workoutExercises} sets={props.exerciseRecords}/>
+            <CompletedExercisesPage exercises={props.exerciseRecords} sets={props.setRecords }/>
           </View>
         </ViewPager>
       </View>
@@ -87,16 +86,37 @@ function Header(props : HeaderProps) {
 }
 
 type WorkoutExercisesProps = {
-  exercises : WorkoutExercise[]
-  sets : Map<String, SetRecord[]>
+  exercises : ExerciseRecord[]
+  sets : SetRecord[][]
 }
 
-function WorkoutExercises({exercises, sets} : WorkoutExercisesProps) {
-  return <FlatList
-    data={exercises}
-    renderItem={({item}) => 
-      <WorkoutExerciseCard exercise={item} setRecords={sets.get(item.exerciseId)!}/>
-    }
-    keyExtractor={(item, index) => String(index)}
-  />
+
+function RemainingExercisesPage({exercises, sets} : WorkoutExercisesProps) {
+  return (
+    <View>
+      <FlatList
+        data={exercises}
+        renderItem={({item, index}) => {
+          const remainingSets= sets[index].filter(setRecord=>setRecord.status == SetRecordstatus.Incomplete)
+          return  <WorkoutExerciseCard exercise={item} setRecords={remainingSets}/>          
+        }}
+        keyExtractor={(_, index) => String(index)}
+    />
+    </View>
+  )
+}
+
+function CompletedExercisesPage({exercises, sets} : WorkoutExercisesProps) {
+  return (
+    <View>
+      <FlatList
+        data={exercises}
+        renderItem={({item, index}) => {
+          const remainingSets= sets[index].filter(setRecord=>setRecord.status != SetRecordstatus.Incomplete)
+          return  <WorkoutExerciseCard exercise={item} setRecords={remainingSets}/>          
+        }}
+        keyExtractor={(_, index) => String(index)}
+      />
+    </View>
+  )
 }

@@ -19,15 +19,14 @@ function WorkoutExerciseCard({exercise, setRecords}: ExerciseCardProps) {
         // fontWeight: 'bold',
     }
 
-
     return (
         <View style={cardStyle}>
             <Text style={textStyle}>{exercise.name}</Text>
             <FlatList
                 horizontal={true}
-                data={exercise.exerciseSets}
+                data={setRecords}
                 renderItem={
-                    ({item}) => ExerciseSet(item)
+                    ({item}) => SetRecordCard(item)
                 }
                 keyExtractor={(item, index) => String(index)}
             />
@@ -35,7 +34,7 @@ function WorkoutExerciseCard({exercise, setRecords}: ExerciseCardProps) {
     )
 }
 
-function ExerciseSet(exerciseSet: ExerciseSet) {
+function SetRecordCard(setRecord: SetRecord) {
     const cardStyle = {
         backgroundColor : '#fdf6e3',
         margin: 10,
@@ -44,7 +43,7 @@ function ExerciseSet(exerciseSet: ExerciseSet) {
 
     return (
         <Card style={cardStyle}>
-            <Card.Title title={exerciseSet.weight} subtitle={"x " + exerciseSet.reps} />
+            <Card.Title title={setRecord.weight} subtitle={"x " + setRecord.reps} />
         </Card>
     )
 }
