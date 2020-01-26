@@ -40,10 +40,15 @@ function SetRecordCard(setRecord: SetRecord) {
         margin: 10,
         width: 80
     }
-
+    
+    const repCount = setRecord.repsBeforeFailure || setRecord.reps
+    if (setRecord.repsBeforeFailure) {
+        cardStyle.backgroundColor = "#cb4b16"
+        // titleStyle.
+    }
     return (
         <Card style={cardStyle}>
-            <Card.Title title={setRecord.weight} subtitle={"x " + setRecord.reps} />
+            <Card.Title title={setRecord.weight} subtitle={"x " + repCount} />
         </Card>
     )
 }

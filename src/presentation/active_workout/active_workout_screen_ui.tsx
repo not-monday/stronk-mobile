@@ -1,6 +1,6 @@
-import { View, Text, ListRenderItemInfo, PanResponderGestureState } from "react-native";
-import React, { useContext, Component } from "react";
-import { Button, Card } from "react-native-paper";
+import { View, Text, ListRenderItemInfo, PanResponderGestureState, Modal } from "react-native";
+import React, { useContext, Component, useState } from "react";
+import { Button, Card, Portal, TextInput, Dialog } from "react-native-paper";
 import { FlatList } from "react-native-gesture-handler";
 import { WorkoutExerciseCard } from "./exercise_card";
 import GestureRecognizer from 'react-native-swipe-gestures';
@@ -12,10 +12,46 @@ interface Props {
   exerciseRecords: ExerciseRecord[],
   setRecords  :SetRecord[][],
   completeCurrentExercise(): void,
-  failCurrentExercise(): void
+  failCurrentExercise(reps: number): void
+}
+
+interface State {
+  showFailureInput : boolean,
+  showInvalidFailureRepCount: boolean,
+  failedRepCount : string,
+}
+
+const initialState : State = {
+  showFailureInput: false,
+  showInvalidFailureRepCount: false,
+  failedRepCount: '0'
 }
 
 export function ActiveWorkoutScreenUI(props : Props) {
+
+  const [state, setState] = useState(initialState)
+  const showFailureDialog = ()=>{
+    setState({...state, showFailureInput : true})
+  }
+  const cancelFailure = ()=>{
+    setState({...state, showFailureInput : false})
+  }
+
+  const submitFailure = ()=>{
+    const failedRepCount = state.failedRepCount as unknown as number
+    props.failCurrentExercise(failedRepCount)
+    setState({...state, showFailureInput: false, failedRepCount : '0'})
+  }
+
+  const updateFailedRepCount = (failedRepInput : string)=>{
+    const input = failedRepInput as unknown as number
+    if (failedRepInput.length != 0 && !isNaN(input)) {
+      setState({...state, failedRepCount: failedRepInput, showInvalidFailureRepCount: false})
+    } else {
+      setState({...state,  failedRepCount: failedRepInput, showInvalidFailureRepCount: true})
+    }
+  }
+
   const cardScreenStyle = {
     backgroundColor : '#fdf6e3',
     flex: 1,
@@ -30,7 +66,7 @@ export function ActiveWorkoutScreenUI(props : Props) {
         <Text> Active Workout page </Text>
         <Header
           handleSuccess={props.completeCurrentExercise}
-          handleFailure={props.failCurrentExercise}
+          handleFailure={showFailureDialog}
         />
         <ViewPager style={cardScreenStyle.viewpagerStyle} initialPage={0}>
           <View key="0">
@@ -40,6 +76,27 @@ export function ActiveWorkoutScreenUI(props : Props) {
             <CompletedExercisesPage exercises={props.exerciseRecords} sets={props.setRecords }/>
           </View>
         </ViewPager>
+        
+        <Portal>
+           <Dialog visible={state.showFailureInput} onDismiss={cancelFailure}>
+              <Dialog.Title>Rep count</Dialog.Title>
+              <Dialog.Content>
+                {state.showInvalidFailureRepCount &&
+                  <Text>Invalid input</Text> 
+                }
+                <TextInput
+                  label='Rep count'
+                  value={state.failedRepCount}
+                  onChange={ (e) =>  updateFailedRepCount(e.nativeEvent.text) } 
+                />
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button disabled={state.showInvalidFailureRepCount} onPress={submitFailure}>Done</Button>
+                <Button onPress={cancelFailure}>Cancel</Button>
+              </Dialog.Actions>
+           </Dialog>
+         </Portal>
+         
       </View>
     )  
   } else {
@@ -71,8 +128,7 @@ function Header(props : HeaderProps) {
 
   return (
     <View style={viewStyle}>
-      <GestureRecognizer 
-      onSwipeLeft={props.handleSuccess} onSwipeRight={props.handleFailure}>
+      <GestureRecognizer onSwipeLeft={props.handleSuccess} onSwipeRight={props.handleFailure}>
         <Card style={cardStyle}>
           <Card.Title title="Card Title" subtitle="Card Subtitle" />
           <Card.Actions>

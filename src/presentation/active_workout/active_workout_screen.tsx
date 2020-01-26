@@ -28,7 +28,7 @@ const initialState : State = {
 function ActiveWorkoutScreen (props : Props) {
     const [state, setState] = useState(initialState)
 
-    const completeExercise = () => {
+    const updateExeciseRecord = (status : Status, repsBeforeFailure? : number) => {
         console.debug("complete exercise " + state.currentExerciseIndex + ", " + state.currentSetIndex)
         if (!state.workoutRef) return
 
@@ -38,7 +38,8 @@ function ActiveWorkoutScreen (props : Props) {
         const currSetRecord = setRecords[state.currentSetIndex]
         const newSetRecord = {
             ...currSetRecord,
-            status : Status.Passed
+            status : status,
+            repsBeforeFailure : repsBeforeFailure
         }
         const newExerciseSetRecords = [...setRecords]
         newExerciseSetRecords[state.currentSetIndex] = newSetRecord
@@ -78,8 +79,11 @@ function ActiveWorkoutScreen (props : Props) {
         console.debug(state)
     }
 
-    const failExercise = () => {
-        // TODO
+    const completeExercise = () => updateExeciseRecord(Status.Passed)
+    const failExercise = (repsBeforeFailure: number)=>{
+        console.log("reps before failure " + repsBeforeFailure)
+        updateExeciseRecord(Status.Failed, repsBeforeFailure)
+        //TODO send failure to server
     }
 
     // initialize the workoutExercise
@@ -135,6 +139,7 @@ type ExerciseRecord = WorkoutExercise & {
 
 type SetRecord = ExerciseSet & {
     status : Status
+    repsBeforeFailure? : number
 }
 
 export { ActiveWorkoutScreen, SetRecord, ExerciseRecord, Status as SetRecordstatus }
